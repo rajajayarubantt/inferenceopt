@@ -23,7 +23,8 @@ jobs:
       - run: uv sync --locked
       - run: uv run ruff check .
       - run: uv run ruff format --check .
-      - run: uv run mypy
+      - name: mypy (type-check every platform, not just the runner's)
+        run: for p in linux darwin win32; do uv run mypy --platform "$p" || exit 1; done
       - name: SPDX headers
         run: git ls-files -z -- '*.py' '*.ts' '*.tsx' '*.mjs' | xargs -0 uv run python scripts/check_spdx.py
 

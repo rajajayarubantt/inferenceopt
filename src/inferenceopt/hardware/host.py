@@ -108,6 +108,8 @@ def _mac_cpu() -> tuple[str | None, list[str]]:
 
 
 def _windows_cpu() -> tuple[str | None, list[str]]:
+    if sys.platform != "win32":  # also tells type checkers the rest is Windows-only
+        return None, []
     model = None
     try:
         import winreg

@@ -26,7 +26,7 @@ cd ui && pnpm install
 
 ```bash
 uv run ruff check . && uv run ruff format --check .
-uv run mypy
+uv run mypy   # CI also runs --platform linux, darwin and win32
 uv run pytest
 cd ui && pnpm lint && pnpm typecheck && pnpm test && pnpm build
 ```
