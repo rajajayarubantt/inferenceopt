@@ -328,6 +328,14 @@ Each phase lists **Backend**, **UI**, **Packaging/CI** and **Exit criteria**. A 
 
 ### Phase 3: Runtime adapters (all built, llama.cpp tested)
 
+> **Status (2026-10-13): implemented.** llama.cpp verified end to end on an RTX 3050 via
+> Docker (Windows Smart App Control blocks unsigned native builds; see `docs/runtimes.md`),
+> and in Linux CI on CPU with the native build. llama.cpp b11429 replaced `--mlock`/`--no-mmap`
+> with `--load-mode`; the adapter handles both. First estimator calibration point for
+> Phase 4: SmolLM2-135M Q4_K_M, ctx 4096, full offload measured +316 MiB GPU vs. an
+> estimate of 389-1197 MiB (591 expected); the fixed-overhead assumption is too high for
+> small models.
+
 **Backend**
 - `RuntimeAdapter` interface: `detect()`, `capabilities()`, `validate(config)`, `build_launch(config) -> LaunchSpec`, `start()`, `health()`, `stop()`, `export_config()`, and `support_level`.
 - `LaunchSpec` is a structured object (executable, argv list, env, ports, mounts), **never a shell string**.

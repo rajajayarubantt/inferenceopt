@@ -18,7 +18,9 @@ def isolated_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     home = tmp_path / "home"
     monkeypatch.setenv("INFERENCEOPT_HOME", str(home))
     for name in list(os.environ):
-        if name.startswith("INFERENCEOPT_") and name != "INFERENCEOPT_HOME":
+        if name.startswith("INFERENCEOPT_") and not name.startswith(
+            ("INFERENCEOPT_HOME", "INFERENCEOPT_TEST_")
+        ):
             monkeypatch.delenv(name)
     return home
 

@@ -51,6 +51,12 @@ all = ["inferenceopt[llm,optimize]"]
 inferenceopt = "inferenceopt.cli:main"
 iopt = "inferenceopt.cli:main"
 
+# Third-party packages can register their own runtime adapters and hardware detectors.
+[project.entry-points."inferenceopt.runtimes"]
+llamacpp = "inferenceopt.runtimes.llamacpp.adapter:LlamaCppAdapter"
+vllm = "inferenceopt.runtimes.vllm:VLLMAdapter"
+tensorrt_llm = "inferenceopt.runtimes.tensorrt_llm:TensorRTLLMAdapter"
+
 [project.urls]
 Homepage = "https://github.com/rajajayarubantt/inferenceopt"
 Documentation = "https://rajajayarubantt.github.io/inferenceopt"

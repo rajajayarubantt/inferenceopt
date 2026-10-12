@@ -49,6 +49,30 @@ jobs:
           -m "not integration_llamacpp and not e2e and not hardware_nvidia
           and not hardware_vllm and not hardware_trtllm"
 
+  integration-llamacpp:
+    name: llama.cpp integration (real runtime, CPU)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/inferenceopt-test
+            ~/.local/share/inferenceopt/runtimes
+          key: llamacpp-cpu-${{ runner.os }}-${{ hashFiles('scripts/fetch_test_model.py') }}
+      - name: Install llama.cpp (stable CPU build, SHA-256 verified by our installer)
+        run: |
+          uv run inferenceopt runtimes install llamacpp --variant cpu --yes
+          echo "INFERENCEOPT_TEST_LLAMA_SERVER=$(find ~/.local/share/inferenceopt/runtimes -name llama-server -type f | head -1)" >> "$GITHUB_ENV"
+      - name: Fetch pinned test model
+        run: uv run python scripts/fetch_test_model.py
+      - name: Integration tests
+        run: uv run pytest -m integration_llamacpp -v -rs
+
   ui:
     runs-on: ubuntu-latest
     defaults:

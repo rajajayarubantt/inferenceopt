@@ -69,3 +69,13 @@ class ModelRow(Base):
     origin: Mapped[str] = mapped_column(String(16))
     created_at: Mapped[datetime]
     payload: Mapped[dict[str, Any]]
+
+
+class RuntimeSettingsRow(Base):
+    """Where to find each runtime (path, python env or image), edited from CLI or UI."""
+
+    __tablename__ = "runtime_settings"
+
+    name: Mapped[str] = mapped_column(String(64), primary_key=True)
+    updated_at: Mapped[datetime]
+    payload: Mapped[dict[str, Any]]

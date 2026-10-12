@@ -6,6 +6,7 @@ import { Hardware } from "../pages/Hardware";
 import { Jobs } from "../pages/Jobs";
 import { Models } from "../pages/Models";
 import { Planned } from "../pages/Planned";
+import { Runtimes } from "../pages/Runtimes";
 import { Settings } from "../pages/Settings";
 import { Layout } from "./Layout";
 
@@ -21,7 +22,7 @@ const routeTree = rootRoute.addChildren([
   page("/", Dashboard),
   page("/hardware", Hardware),
   page("/models", Models),
-  planned("/runtimes", "Runtimes", 3, "Configure llama.cpp, vLLM and TensorRT-LLM."),
+  page("/runtimes", Runtimes),
   page("/jobs", Jobs),
   planned(
     "/planner",

@@ -218,6 +218,157 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/runtimes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Runtimes */
+        get: operations["list_runtimes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/runtimes/llamacpp/install": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Install Llamacpp
+         * @description Download an official llama.cpp build (SHA-256 verified) in the background.
+         */
+        post: operations["install_llamacpp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/runtimes/llamacpp/install-plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Llamacpp Install Plan
+         * @description What an install would download (for the consent dialog). Downloads nothing.
+         */
+        get: operations["llamacpp_install_plan"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/runtimes/llamacpp/install/{task_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Llamacpp Install Status */
+        get: operations["llamacpp_install_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/runtimes/{name}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Runtime */
+        get: operations["get_runtime"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/runtimes/{name}/launch-preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Launch Preview
+         * @description Validate a configuration and show the exact command. Starts nothing.
+         */
+        post: operations["launch_preview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/runtimes/{name}/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Save Runtime Settings
+         * @description Where to find the runtime. Executables must have the runtime's own binary name.
+         */
+        put: operations["save_runtime_settings"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/runtimes/{name}/smoke-test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Smoke Test
+         * @description Start the runtime, generate a few tokens, stop it. Not a benchmark.
+         */
+        post: operations["smoke_test"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/version": {
         parameters: {
             query?: never;
@@ -371,6 +522,20 @@ export interface components {
             /** Weight Bits Per Param */
             weight_bits_per_param?: number | null;
         };
+        /** FailureRecord */
+        FailureRecord: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "oom" | "timeout" | "crash" | "invalid_output" | "constraint" | "config" | "cancelled" | "other";
+            /** Log Excerpt */
+            log_excerpt?: string | null;
+            /** Message */
+            message: string;
+            /** Stage */
+            stage: string;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -432,6 +597,94 @@ export interface components {
             /** Ram Total Bytes */
             ram_total_bytes?: number | null;
         };
+        /** InstallPlanResponse */
+        InstallPlanResponse: {
+            /** Assets */
+            assets: string[];
+            /** Tag */
+            tag: string;
+            /** Total Bytes */
+            total_bytes: number;
+            /** Variant */
+            variant: string;
+        };
+        /** InstallRequest */
+        InstallRequest: {
+            /**
+             * Channel
+             * @default stable
+             * @enum {string}
+             */
+            channel: "stable" | "nightly";
+            /**
+             * Confirm
+             * @default false
+             */
+            confirm: boolean;
+            /**
+             * Variant
+             * @default auto
+             * @enum {string}
+             */
+            variant: "auto" | "cpu" | "cuda" | "vulkan";
+        };
+        /** InstallTask */
+        InstallTask: {
+            /** Assets */
+            assets?: string[];
+            /** Current Asset */
+            current_asset?: string | null;
+            /**
+             * Downloaded Bytes
+             * @default 0
+             */
+            downloaded_bytes: number;
+            /** Error */
+            error?: string | null;
+            /** Executable */
+            executable?: string | null;
+            /** Id */
+            id: string;
+            /**
+             * Status
+             * @default planning
+             * @enum {string}
+             */
+            status: "planning" | "downloading" | "done" | "failed";
+            /** Tag */
+            tag?: string | null;
+            /** Total Bytes */
+            total_bytes?: number | null;
+            /** Variant */
+            variant?: string | null;
+        };
+        /**
+         * Installation
+         * @description A runtime that was actually found on this machine.
+         */
+        Installation: {
+            /** Devices */
+            devices?: string[];
+            /** Executable */
+            executable: string;
+            /** Features */
+            features?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Mode
+             * @default native
+             * @enum {string}
+             */
+            mode: "native" | "docker";
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "settings" | "managed" | "path" | "docker";
+            /** Version */
+            version?: string | null;
+        };
         /** JobValidation */
         JobValidation: {
             /**
@@ -442,6 +695,64 @@ export interface components {
             job?: components["schemas"]["OptimizationJob"] | null;
             /** Ok */
             ok: boolean;
+        };
+        /** LaunchPreview */
+        LaunchPreview: {
+            /** Config */
+            config: {
+                [key: string]: unknown;
+            };
+            /** Errors */
+            errors: string[];
+            /** Model Id */
+            model_id: string;
+            /** Runtime */
+            runtime: string;
+            spec: components["schemas"]["LaunchSpec"] | null;
+        };
+        /** LaunchRequest */
+        LaunchRequest: {
+            /** Config */
+            config?: {
+                [key: string]: unknown;
+            };
+            /** Model Id */
+            model_id: string;
+        };
+        /**
+         * LaunchSpec
+         * @description Exactly what will be executed. Shown verbatim in dry runs and stored with trials.
+         */
+        LaunchSpec: {
+            /** Api Base */
+            api_base: string;
+            /** Argv */
+            argv: string[];
+            /** Container Name */
+            container_name?: string | null;
+            /** Env */
+            env?: {
+                [key: string]: string;
+            };
+            /**
+             * Health Path
+             * @default /health
+             */
+            health_path: string;
+            /**
+             * Host
+             * @default 127.0.0.1
+             */
+            host: string;
+            /** Port */
+            port: number;
+            /** Served Model Name */
+            served_model_name: string;
+            /**
+             * Startup Timeout S
+             * @default 300
+             */
+            startup_timeout_s: number;
         };
         /** LocalModelRequest */
         LocalModelRequest: {
@@ -609,6 +920,34 @@ export interface components {
             search?: components["schemas"]["SearchSpec"];
             workload?: components["schemas"]["Workload"];
         };
+        /**
+         * ParamSpec
+         * @description One tunable runtime parameter. The optimizer may only touch parameters listed here.
+         */
+        ParamSpec: {
+            /** Choices */
+            choices?: string[] | null;
+            /** Default */
+            default?: unknown;
+            /** Description */
+            description: string;
+            /** Maximum */
+            maximum?: number | null;
+            /** Minimum */
+            minimum?: number | null;
+            /** Name */
+            name: string;
+            /**
+             * Tunable
+             * @default true
+             */
+            tunable: boolean;
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "int" | "float" | "bool" | "choice" | "str";
+        };
         /** Permissions */
         Permissions: {
             /**
@@ -675,6 +1014,48 @@ export interface components {
             /** Runtime */
             runtime: string;
         };
+        /**
+         * RuntimeSettings
+         * @description Where to find a runtime. Persisted per runtime; edited from the CLI or UI.
+         */
+        RuntimeSettings: {
+            /** Executable */
+            executable?: string | null;
+            /** Extra Env */
+            extra_env?: {
+                [key: string]: string;
+            };
+            /** Image */
+            image?: string | null;
+            /**
+             * Mode
+             * @default native
+             * @enum {string}
+             */
+            mode: "native" | "docker";
+            /** Python Env */
+            python_env?: string | null;
+        };
+        /** RuntimeStatus */
+        RuntimeStatus: {
+            /** Display Name */
+            display_name: string;
+            /** Homepage */
+            homepage: string;
+            installation: components["schemas"]["Installation"] | null;
+            /** Name */
+            name: string;
+            /** Notes */
+            notes: string[];
+            /** Parameters */
+            parameters: components["schemas"]["ParamSpec"][];
+            /** Platforms */
+            platforms: string[];
+            settings: components["schemas"]["RuntimeSettings"];
+            support_level: components["schemas"]["SupportLevel"];
+            /** Weight Formats */
+            weight_formats: string[];
+        };
         /** SearchSpec */
         SearchSpec: {
             /**
@@ -709,6 +1090,70 @@ export interface components {
             /** Authenticated */
             authenticated: boolean;
         };
+        /** SmokeTestRequest */
+        SmokeTestRequest: {
+            /** Config */
+            config?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Confirm
+             * @default false
+             */
+            confirm: boolean;
+            /**
+             * Max Tokens
+             * @default 24
+             */
+            max_tokens: number;
+            /** Model Id */
+            model_id: string;
+        };
+        /** SmokeTestResult */
+        SmokeTestResult: {
+            /** Completion Tokens */
+            completion_tokens?: number | null;
+            /** Decode Tokens Per S */
+            decode_tokens_per_s?: number | null;
+            /** E2E S */
+            e2e_s?: number | null;
+            /** Errors */
+            errors?: string[];
+            failure?: components["schemas"]["FailureRecord"] | null;
+            /** Load Time S */
+            load_time_s?: number | null;
+            /** Log Path */
+            log_path?: string | null;
+            /** Log Tail */
+            log_tail?: string | null;
+            /** Model Id */
+            model_id: string;
+            /** Ok */
+            ok: boolean;
+            /** Output Excerpt */
+            output_excerpt?: string | null;
+            /** Peak Host Memory Bytes */
+            peak_host_memory_bytes?: number | null;
+            /** Runtime */
+            runtime: string;
+            /** Runtime Version */
+            runtime_version?: string | null;
+            spec?: components["schemas"]["LaunchSpec"] | null;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at?: string;
+            /** Token Count Source */
+            token_count_source?: string | null;
+            /** Ttft S */
+            ttft_s?: number | null;
+        };
+        /**
+         * SupportLevel
+         * @enum {string}
+         */
+        SupportLevel: "tested" | "experimental" | "unsupported";
         /** ValidateJobRequest */
         ValidateJobRequest: {
             /** Yaml */
@@ -1131,6 +1576,258 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PreflightReport"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_runtimes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RuntimeStatus"][];
+                };
+            };
+        };
+    };
+    install_llamacpp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InstallRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InstallTask"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    llamacpp_install_plan: {
+        parameters: {
+            query?: {
+                channel?: "stable" | "nightly";
+                variant?: "auto" | "cpu" | "cuda" | "vulkan";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InstallPlanResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    llamacpp_install_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                task_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InstallTask"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_runtime: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RuntimeStatus"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    launch_preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LaunchRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LaunchPreview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    save_runtime_settings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RuntimeSettings"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RuntimeStatus"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    smoke_test: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SmokeTestRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SmokeTestResult"];
                 };
             };
             /** @description Validation Error */

@@ -3,12 +3,13 @@
 
 from fastapi import APIRouter
 
-from inferenceopt.server.routes import auth, inventory, jobs, system
+from inferenceopt.server.routes import auth, inventory, jobs, runtimes, system
 
 api_router = APIRouter(prefix="/api/v1")
 api_router.include_router(system.router)
 api_router.include_router(auth.router)
 api_router.include_router(jobs.router)
 api_router.include_router(inventory.router)
+api_router.include_router(runtimes.router)
 
 __all__ = ["api_router"]

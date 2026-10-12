@@ -8,7 +8,7 @@ const NAV: NavItem[] = [
   { to: "/", label: "Dashboard" },
   { to: "/hardware", label: "Hardware" },
   { to: "/models", label: "Models" },
-  { to: "/runtimes", label: "Runtimes", phase: 3 },
+  { to: "/runtimes", label: "Runtimes" },
   { to: "/jobs", label: "Jobs" },
   { to: "/planner", label: "LLM Planner", phase: 6 },
   { to: "/deploy", label: "Deploy", phase: 7 },

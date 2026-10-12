@@ -187,3 +187,55 @@ def test_curated_model_with_slash_in_id(client: TestClient) -> None:
         headers=auth(),
     )
     assert bad.status_code == 422
+
+
+# --- Phase 3: runtimes ------------------------------------------------------------------
+
+
+def test_runtime_endpoints(client: TestClient) -> None:
+    runtimes = client.get("/api/v1/runtimes", headers=auth()).json()
+    assert {r["name"] for r in runtimes} == {"llamacpp", "vllm", "tensorrt_llm"}
+    assert client.get("/api/v1/runtimes/nope", headers=auth()).status_code == 404
+    status = client.get("/api/v1/runtimes/vllm", headers=auth()).json()
+    assert status["support_level"] == "experimental"
+    assert any(p["name"] == "gpu_memory_utilization" for p in status["parameters"])
+
+
+def test_runtime_settings_reject_arbitrary_programs(client: TestClient) -> None:
+    import sys
+
+    bad = client.put(
+        "/api/v1/runtimes/llamacpp/settings", json={"executable": sys.executable}, headers=auth()
+    )
+    assert bad.status_code == 422
+    ok = client.put(
+        "/api/v1/runtimes/vllm/settings",
+        json={"mode": "docker", "image": "vllm/vllm-openai:v0.11.0"},
+        headers=auth(),
+    )
+    assert ok.status_code == 200
+    assert ok.json()["settings"]["image"] == "vllm/vllm-openai:v0.11.0"
+
+
+def test_starting_or_installing_requires_confirmation(client: TestClient) -> None:
+    smoke = client.post(
+        "/api/v1/runtimes/llamacpp/smoke-test", json={"model_id": "x"}, headers=auth()
+    )
+    assert smoke.status_code == 428
+    install = client.post("/api/v1/runtimes/llamacpp/install", json={}, headers=auth())
+    assert install.status_code == 428
+    assert client.get("/api/v1/runtimes/llamacpp/install/nope", headers=auth()).status_code == 404
+
+
+def test_launch_preview_reports_errors(client: TestClient) -> None:
+    resp = client.post(
+        "/api/v1/runtimes/vllm/launch-preview",
+        json={"model_id": "hf:Qwen/Qwen2.5-0.5B-Instruct", "config": {"bogus": 1}},
+        headers=auth(),
+    )
+    assert resp.status_code == 200
+    assert resp.json()["spec"] is None and resp.json()["errors"]
+    missing = client.post(
+        "/api/v1/runtimes/vllm/launch-preview", json={"model_id": "nope:x"}, headers=auth()
+    )
+    assert missing.status_code == 404

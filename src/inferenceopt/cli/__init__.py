@@ -20,6 +20,7 @@ from inferenceopt.cli.common import (
     print_json,
 )
 from inferenceopt.cli.inventory import hardware_app, models_app, preflight
+from inferenceopt.cli.runtimes import runtimes_app
 from inferenceopt.config.redaction import redact
 
 app = typer.Typer(
@@ -34,6 +35,7 @@ app.add_typer(config_app, name="config")
 app.add_typer(job_app, name="job")
 app.add_typer(hardware_app, name="hardware")
 app.add_typer(models_app, name="models")
+app.add_typer(runtimes_app, name="runtimes")
 app.command()(preflight)
 
 _STATUS_STYLE = {"ok": "green", "info": "blue", "warn": "yellow", "fail": "red"}

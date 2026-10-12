@@ -32,6 +32,7 @@ nav:
       - Installation: installation.md
       - Quick start: quickstart.md
       - Configuration: configuration.md
+  - Runtimes: runtimes.md
   - Safety: safety.md
   - Development:
       - Architecture: architecture.md

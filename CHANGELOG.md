@@ -8,6 +8,18 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- Runtime adapters behind one interface: llama.cpp (**tested**), vLLM and TensorRT-LLM
+  (**experimental**: contract-tested, not yet validated on hardware). Native and Docker
+  modes; parameters, validation rules and capability probes per runtime and version.
+- Process supervisor: no shell, Windows Job Objects / POSIX process groups so the whole
+  tree dies with the runtime, health-based readiness, and classified failures
+  (OOM, bad config, crash, timeout, blocked by Windows App Control).
+- Streaming OpenAI-compatible client measuring TTFT and inter-chunk latency.
+- llama.cpp installer: stable/nightly builds from GitHub, CUDA build chosen by driver
+  version, SHA-256 verified downloads and safe extraction.
+- Smoke tests (start, generate, stop) and launch previews from CLI, API and UI.
+- CLI: `runtimes list|inspect|configure|install|launch-preview|smoke-test`.
+- UI: Runtimes page with settings, consented installs and a smoke-test panel.
 - Hardware discovery: CPU model, cores and SIMD features, RAM, NVIDIA GPUs via NVML
   (compute capability, memory, driver/CUDA versions), Apple Silicon, and a plugin entry
   point (`inferenceopt.hardware`). Every value is tagged detected / inferred / user.

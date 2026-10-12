@@ -9,9 +9,9 @@ deployment bundle. Everything is available from a **web UI**, a **CLI** and a **
 An LLM planner (any provider via LiteLLM) is optional; every claim is backed by
 measurements, never by the LLM.
 
-> **Status: pre-alpha (Phase 2 of the [implementation plan](docs/design/implementation-plan.md)).**
-> Hardware scanning, the model registry and memory/fit estimates work. Runtimes,
-> benchmarking and optimization are not implemented yet.
+> **Status: pre-alpha (Phase 3 of the [implementation plan](docs/design/implementation-plan.md)).**
+> Hardware scanning, the model registry, memory/fit estimates and runtime adapters work
+> (start, health-check and smoke-test a model). Benchmarking and optimization come next.
 
 ## Install
 
@@ -45,9 +45,9 @@ URL. See [docs/safety.md](docs/safety.md) before exposing it to a network.
 
 | Runtime | Status |
 |---|---|
-| llama.cpp | Planned for Phase 3, tested in CI |
-| vLLM | Planned for Phase 3, **experimental** (not yet validated on hardware) |
-| TensorRT-LLM | Planned for Phase 3, **experimental** (not yet validated on hardware) |
+| llama.cpp | **tested** (native or Docker; see [docs/runtimes.md](docs/runtimes.md)) |
+| vLLM | **experimental** (contract-tested, not yet validated on hardware) |
+| TensorRT-LLM | **experimental** (contract-tested, not yet validated on hardware) |
 
 ## Development
 

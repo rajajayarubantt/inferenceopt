@@ -372,6 +372,51 @@
         "title": "EstimateInputs",
         "type": "object"
       },
+      "FailureRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "oom",
+              "timeout",
+              "crash",
+              "invalid_output",
+              "constraint",
+              "config",
+              "cancelled",
+              "other"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "log_excerpt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Log Excerpt"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "stage": {
+            "title": "Stage",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stage",
+          "kind",
+          "message"
+        ],
+        "title": "FailureRecord",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -536,6 +581,228 @@
         "title": "HostInfo",
         "type": "object"
       },
+      "InstallPlanResponse": {
+        "properties": {
+          "assets": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assets",
+            "type": "array"
+          },
+          "tag": {
+            "title": "Tag",
+            "type": "string"
+          },
+          "total_bytes": {
+            "title": "Total Bytes",
+            "type": "integer"
+          },
+          "variant": {
+            "title": "Variant",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tag",
+          "variant",
+          "assets",
+          "total_bytes"
+        ],
+        "title": "InstallPlanResponse",
+        "type": "object"
+      },
+      "InstallRequest": {
+        "properties": {
+          "channel": {
+            "default": "stable",
+            "enum": [
+              "stable",
+              "nightly"
+            ],
+            "title": "Channel",
+            "type": "string"
+          },
+          "confirm": {
+            "default": false,
+            "title": "Confirm",
+            "type": "boolean"
+          },
+          "variant": {
+            "default": "auto",
+            "enum": [
+              "auto",
+              "cpu",
+              "cuda",
+              "vulkan"
+            ],
+            "title": "Variant",
+            "type": "string"
+          }
+        },
+        "title": "InstallRequest",
+        "type": "object"
+      },
+      "InstallTask": {
+        "properties": {
+          "assets": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assets",
+            "type": "array"
+          },
+          "current_asset": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Asset"
+          },
+          "downloaded_bytes": {
+            "default": 0,
+            "title": "Downloaded Bytes",
+            "type": "integer"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "executable": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Executable"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "status": {
+            "default": "planning",
+            "enum": [
+              "planning",
+              "downloading",
+              "done",
+              "failed"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "tag": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tag"
+          },
+          "total_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Bytes"
+          },
+          "variant": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variant"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "InstallTask",
+        "type": "object"
+      },
+      "Installation": {
+        "additionalProperties": false,
+        "description": "A runtime that was actually found on this machine.",
+        "properties": {
+          "devices": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Devices",
+            "type": "array"
+          },
+          "executable": {
+            "title": "Executable",
+            "type": "string"
+          },
+          "features": {
+            "additionalProperties": true,
+            "title": "Features",
+            "type": "object"
+          },
+          "mode": {
+            "default": "native",
+            "enum": [
+              "native",
+              "docker"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "settings",
+              "managed",
+              "path",
+              "docker"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          }
+        },
+        "required": [
+          "executable",
+          "source"
+        ],
+        "title": "Installation",
+        "type": "object"
+      },
       "JobValidation": {
         "properties": {
           "issues": {
@@ -565,6 +832,136 @@
           "ok"
         ],
         "title": "JobValidation",
+        "type": "object"
+      },
+      "LaunchPreview": {
+        "properties": {
+          "config": {
+            "additionalProperties": true,
+            "title": "Config",
+            "type": "object"
+          },
+          "errors": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Errors",
+            "type": "array"
+          },
+          "model_id": {
+            "title": "Model Id",
+            "type": "string"
+          },
+          "runtime": {
+            "title": "Runtime",
+            "type": "string"
+          },
+          "spec": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LaunchSpec"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "runtime",
+          "model_id",
+          "config",
+          "errors",
+          "spec"
+        ],
+        "title": "LaunchPreview",
+        "type": "object"
+      },
+      "LaunchRequest": {
+        "properties": {
+          "config": {
+            "additionalProperties": true,
+            "title": "Config",
+            "type": "object"
+          },
+          "model_id": {
+            "title": "Model Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "model_id"
+        ],
+        "title": "LaunchRequest",
+        "type": "object"
+      },
+      "LaunchSpec": {
+        "additionalProperties": false,
+        "description": "Exactly what will be executed. Shown verbatim in dry runs and stored with trials.",
+        "properties": {
+          "api_base": {
+            "title": "Api Base",
+            "type": "string"
+          },
+          "argv": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Argv",
+            "type": "array"
+          },
+          "container_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Container Name"
+          },
+          "env": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Env",
+            "type": "object"
+          },
+          "health_path": {
+            "default": "/health",
+            "title": "Health Path",
+            "type": "string"
+          },
+          "host": {
+            "default": "127.0.0.1",
+            "title": "Host",
+            "type": "string"
+          },
+          "port": {
+            "maximum": 65535.0,
+            "minimum": 1.0,
+            "title": "Port",
+            "type": "integer"
+          },
+          "served_model_name": {
+            "title": "Served Model Name",
+            "type": "string"
+          },
+          "startup_timeout_s": {
+            "default": 300,
+            "title": "Startup Timeout S",
+            "type": "number"
+          }
+        },
+        "required": [
+          "argv",
+          "port",
+          "api_base",
+          "served_model_name"
+        ],
+        "title": "LaunchSpec",
         "type": "object"
       },
       "LocalModelRequest": {
@@ -1053,6 +1450,82 @@
         "title": "OptimizationJob",
         "type": "object"
       },
+      "ParamSpec": {
+        "additionalProperties": false,
+        "description": "One tunable runtime parameter. The optimizer may only touch parameters listed here.",
+        "properties": {
+          "choices": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Choices"
+          },
+          "default": {
+            "title": "Default"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "maximum": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maximum"
+          },
+          "minimum": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minimum"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "tunable": {
+            "default": true,
+            "title": "Tunable",
+            "type": "boolean"
+          },
+          "type": {
+            "enum": [
+              "int",
+              "float",
+              "bool",
+              "choice",
+              "str"
+            ],
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "type",
+          "description"
+        ],
+        "title": "ParamSpec",
+        "type": "object"
+      },
       "Permissions": {
         "additionalProperties": false,
         "properties": {
@@ -1212,6 +1685,137 @@
         "title": "RuntimeCompatibility",
         "type": "object"
       },
+      "RuntimeSettings": {
+        "additionalProperties": false,
+        "description": "Where to find a runtime. Persisted per runtime; edited from the CLI or UI.",
+        "properties": {
+          "executable": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Executable"
+          },
+          "extra_env": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Extra Env",
+            "type": "object"
+          },
+          "image": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image"
+          },
+          "mode": {
+            "default": "native",
+            "enum": [
+              "native",
+              "docker"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "python_env": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Python Env"
+          }
+        },
+        "title": "RuntimeSettings",
+        "type": "object"
+      },
+      "RuntimeStatus": {
+        "properties": {
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "homepage": {
+            "title": "Homepage",
+            "type": "string"
+          },
+          "installation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Installation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "parameters": {
+            "items": {
+              "$ref": "#/components/schemas/ParamSpec"
+            },
+            "title": "Parameters",
+            "type": "array"
+          },
+          "platforms": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Platforms",
+            "type": "array"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/RuntimeSettings"
+          },
+          "support_level": {
+            "$ref": "#/components/schemas/SupportLevel"
+          },
+          "weight_formats": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Weight Formats",
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "display_name",
+          "support_level",
+          "platforms",
+          "weight_formats",
+          "homepage",
+          "settings",
+          "installation",
+          "notes",
+          "parameters"
+        ],
+        "title": "RuntimeStatus",
+        "type": "object"
+      },
       "SearchSpec": {
         "additionalProperties": false,
         "properties": {
@@ -1273,6 +1877,221 @@
         ],
         "title": "SessionResponse",
         "type": "object"
+      },
+      "SmokeTestRequest": {
+        "properties": {
+          "config": {
+            "additionalProperties": true,
+            "title": "Config",
+            "type": "object"
+          },
+          "confirm": {
+            "default": false,
+            "title": "Confirm",
+            "type": "boolean"
+          },
+          "max_tokens": {
+            "default": 24,
+            "maximum": 256.0,
+            "minimum": 1.0,
+            "title": "Max Tokens",
+            "type": "integer"
+          },
+          "model_id": {
+            "title": "Model Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "model_id"
+        ],
+        "title": "SmokeTestRequest",
+        "type": "object"
+      },
+      "SmokeTestResult": {
+        "properties": {
+          "completion_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completion Tokens"
+          },
+          "decode_tokens_per_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decode Tokens Per S"
+          },
+          "e2e_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "E2E S"
+          },
+          "errors": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Errors",
+            "type": "array"
+          },
+          "failure": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FailureRecord"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "load_time_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Load Time S"
+          },
+          "log_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Log Path"
+          },
+          "log_tail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Log Tail"
+          },
+          "model_id": {
+            "title": "Model Id",
+            "type": "string"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "output_excerpt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output Excerpt"
+          },
+          "peak_host_memory_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Peak Host Memory Bytes"
+          },
+          "runtime": {
+            "title": "Runtime",
+            "type": "string"
+          },
+          "runtime_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runtime Version"
+          },
+          "spec": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LaunchSpec"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "token_count_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Token Count Source"
+          },
+          "ttft_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ttft S"
+          }
+        },
+        "required": [
+          "ok",
+          "runtime",
+          "model_id"
+        ],
+        "title": "SmokeTestResult",
+        "type": "object"
+      },
+      "SupportLevel": {
+        "enum": [
+          "tested",
+          "experimental",
+          "unsupported"
+        ],
+        "title": "SupportLevel",
+        "type": "string"
       },
       "ValidateJobRequest": {
         "properties": {
@@ -1872,6 +2691,380 @@
         "summary": "Preflight",
         "tags": [
           "inventory"
+        ]
+      }
+    },
+    "/api/v1/runtimes": {
+      "get": {
+        "operationId": "list_runtimes",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RuntimeStatus"
+                  },
+                  "title": "Response List Runtimes",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Runtimes",
+        "tags": [
+          "runtimes"
+        ]
+      }
+    },
+    "/api/v1/runtimes/llamacpp/install": {
+      "post": {
+        "description": "Download an official llama.cpp build (SHA-256 verified) in the background.",
+        "operationId": "install_llamacpp",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InstallRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstallTask"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Install Llamacpp",
+        "tags": [
+          "runtimes"
+        ]
+      }
+    },
+    "/api/v1/runtimes/llamacpp/install-plan": {
+      "get": {
+        "description": "What an install would download (for the consent dialog). Downloads nothing.",
+        "operationId": "llamacpp_install_plan",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "channel",
+            "required": false,
+            "schema": {
+              "default": "stable",
+              "enum": [
+                "stable",
+                "nightly"
+              ],
+              "title": "Channel",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "variant",
+            "required": false,
+            "schema": {
+              "default": "auto",
+              "enum": [
+                "auto",
+                "cpu",
+                "cuda",
+                "vulkan"
+              ],
+              "title": "Variant",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstallPlanResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Llamacpp Install Plan",
+        "tags": [
+          "runtimes"
+        ]
+      }
+    },
+    "/api/v1/runtimes/llamacpp/install/{task_id}": {
+      "get": {
+        "operationId": "llamacpp_install_status",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "task_id",
+            "required": true,
+            "schema": {
+              "title": "Task Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstallTask"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Llamacpp Install Status",
+        "tags": [
+          "runtimes"
+        ]
+      }
+    },
+    "/api/v1/runtimes/{name}": {
+      "get": {
+        "operationId": "get_runtime",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuntimeStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Runtime",
+        "tags": [
+          "runtimes"
+        ]
+      }
+    },
+    "/api/v1/runtimes/{name}/launch-preview": {
+      "post": {
+        "description": "Validate a configuration and show the exact command. Starts nothing.",
+        "operationId": "launch_preview",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LaunchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LaunchPreview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Launch Preview",
+        "tags": [
+          "runtimes"
+        ]
+      }
+    },
+    "/api/v1/runtimes/{name}/settings": {
+      "put": {
+        "description": "Where to find the runtime. Executables must have the runtime's own binary name.",
+        "operationId": "save_runtime_settings",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuntimeSettings"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuntimeStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Save Runtime Settings",
+        "tags": [
+          "runtimes"
+        ]
+      }
+    },
+    "/api/v1/runtimes/{name}/smoke-test": {
+      "post": {
+        "description": "Start the runtime, generate a few tokens, stop it. Not a benchmark.",
+        "operationId": "smoke_test",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SmokeTestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SmokeTestResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Smoke Test",
+        "tags": [
+          "runtimes"
         ]
       }
     },
