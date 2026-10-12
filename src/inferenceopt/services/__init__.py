@@ -6,6 +6,17 @@ over these functions. Add new capabilities here first, then expose them everywhe
 """
 
 from inferenceopt.services.context import AppContext
+from inferenceopt.services.inventory import (
+    add_local_model,
+    current_hardware,
+    get_model,
+    inspect_local_model,
+    latest_hardware,
+    list_models,
+    remove_model,
+    run_preflight,
+    scan_hardware,
+)
 from inferenceopt.services.jobs import (
     JobValidation,
     ValidationIssue,
@@ -29,8 +40,17 @@ __all__ = [
     "JobValidation",
     "ValidationIssue",
     "VersionInfo",
+    "add_local_model",
+    "current_hardware",
     "doctor",
+    "get_model",
+    "inspect_local_model",
+    "latest_hardware",
+    "list_models",
     "public_config",
+    "remove_model",
+    "run_preflight",
+    "scan_hardware",
     "validate_job_data",
     "validate_job_file",
     "validate_job_text",

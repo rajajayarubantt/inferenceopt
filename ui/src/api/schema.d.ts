@@ -59,6 +59,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/hardware": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Hardware
+         * @description The most recent saved hardware scan.
+         */
+        get: operations["get_hardware"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/hardware/scan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Scan Hardware
+         * @description Scan the hardware now (read-only) and save the result.
+         */
+        post: operations["scan_hardware"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -90,6 +130,88 @@ export interface paths {
         put?: never;
         /** Validate Job */
         post: operations["validate_job"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/models": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Models */
+        get: operations["list_models"];
+        put?: never;
+        /**
+         * Add Model
+         * @description Register a local model (reads headers only; nothing is copied or downloaded).
+         */
+        post: operations["add_model"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/models/inspect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Inspect Model
+         * @description Read a local model's metadata (headers only) without registering it.
+         */
+        post: operations["inspect_model"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/models/{model_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Model */
+        get: operations["get_model"];
+        put?: never;
+        post?: never;
+        /**
+         * Remove Model
+         * @description Remove a user-added model from the registry. Files on disk are never touched.
+         */
+        delete: operations["remove_model"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/preflight": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preflight
+         * @description Estimate memory and check whether the model fits each device. Never loads weights.
+         */
+        post: operations["preflight"];
         delete?: never;
         options?: never;
         head?: never;
@@ -153,6 +275,51 @@ export interface components {
              */
             generate_container: boolean;
         };
+        /** Device */
+        Device: {
+            /** Architecture */
+            architecture?: string | null;
+            backend: components["schemas"]["DeviceBackend"];
+            /** Compute Capability */
+            compute_capability?: string | null;
+            /** Device Id */
+            device_id: string;
+            /** Driver Version */
+            driver_version?: string | null;
+            /** Field Sources */
+            field_sources?: {
+                [key: string]: components["schemas"]["Provenance"];
+            };
+            /** Memory Free Bytes */
+            memory_free_bytes?: number | null;
+            /** Memory Total Bytes */
+            memory_total_bytes?: number | null;
+            /** Name */
+            name: string;
+            /** Supported Dtypes */
+            supported_dtypes?: string[];
+        };
+        /**
+         * DeviceBackend
+         * @enum {string}
+         */
+        DeviceBackend: "cpu" | "cuda" | "rocm" | "metal" | "other";
+        /** DeviceFit */
+        DeviceFit: {
+            /** Available Bytes */
+            available_bytes: number | null;
+            /** Device Id */
+            device_id: string;
+            /** Device Name */
+            device_name: string;
+            /** Reason */
+            reason: string;
+            /**
+             * Verdict
+             * @enum {string}
+             */
+            verdict: "fits" | "tight" | "does_not_fit" | "unknown";
+        };
         /** DoctorCheck */
         DoctorCheck: {
             /** Detail */
@@ -173,10 +340,65 @@ export interface components {
             checks: components["schemas"]["DoctorCheck"][];
             version: components["schemas"]["VersionInfo"];
         };
+        /** EstimateInputs */
+        EstimateInputs: {
+            /**
+             * Batch Tokens
+             * @default 512
+             */
+            batch_tokens: number;
+            /**
+             * Concurrency
+             * @default 1
+             */
+            concurrency: number;
+            /**
+             * Context Tokens
+             * @default 4096
+             */
+            context_tokens: number;
+            /**
+             * Flash Attention
+             * @default true
+             */
+            flash_attention: boolean;
+            /**
+             * Kv Cache Dtype
+             * @default f16
+             * @enum {string}
+             */
+            kv_cache_dtype: "f32" | "f16" | "bf16" | "q8_0" | "q4_0" | "fp8";
+            /** Weight Bits Per Param */
+            weight_bits_per_param?: number | null;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** HardwareProfile */
+        HardwareProfile: {
+            /**
+             * Captured At
+             * Format: date-time
+             */
+            captured_at?: string;
+            /** Devices */
+            devices?: components["schemas"]["Device"][];
+            host: components["schemas"]["HostInfo"];
+            /** Id */
+            id?: string;
+            /** Notes */
+            notes?: string[];
+            /** Runtime Versions */
+            runtime_versions?: {
+                [key: string]: string;
+            };
+            /**
+             * Schema Version
+             * @default 1
+             */
+            schema_version: number;
         };
         /** Health */
         Health: {
@@ -186,6 +408,29 @@ export interface components {
              * @constant
              */
             status: "ok";
+        };
+        /** HostInfo */
+        HostInfo: {
+            /** Cpu Arch */
+            cpu_arch: string;
+            /** Cpu Flags */
+            cpu_flags?: string[];
+            /** Cpu Model */
+            cpu_model?: string | null;
+            /** Logical Cores */
+            logical_cores?: number | null;
+            /** Os */
+            os: string;
+            /** Os Version */
+            os_version: string;
+            /** Physical Cores */
+            physical_cores?: number | null;
+            /** Python Version */
+            python_version: string;
+            /** Ram Available Bytes */
+            ram_available_bytes?: number | null;
+            /** Ram Total Bytes */
+            ram_total_bytes?: number | null;
         };
         /** JobValidation */
         JobValidation: {
@@ -197,6 +442,134 @@ export interface components {
             job?: components["schemas"]["OptimizationJob"] | null;
             /** Ok */
             ok: boolean;
+        };
+        /** LocalModelRequest */
+        LocalModelRequest: {
+            /**
+             * Id
+             * @description Registry id (default: derived from name)
+             */
+            id?: string | null;
+            /**
+             * Path
+             * @description Absolute path to a .gguf file or HF directory
+             */
+            path: string;
+        };
+        /** MemoryComponent */
+        MemoryComponent: {
+            /** Basis */
+            basis: string;
+            /** Bytes */
+            bytes: number;
+            /** Name */
+            name: string;
+        };
+        /**
+         * MemoryEstimate
+         * @description Always an estimate: actual memory must be measured (Plan.md §7.2).
+         */
+        MemoryEstimate: {
+            /** Assumptions */
+            assumptions: string[];
+            /** Components */
+            components: components["schemas"]["MemoryComponent"][];
+            /** Expected Bytes */
+            expected_bytes: number;
+            /** High Bytes */
+            high_bytes: number;
+            inputs: components["schemas"]["EstimateInputs"];
+            /**
+             * Kind
+             * @default estimate
+             * @constant
+             */
+            kind: "estimate";
+            /** Low Bytes */
+            low_bytes: number;
+        };
+        /**
+         * ModelArchitecture
+         * @description Shape parameters needed for memory estimation. All values describe one model copy.
+         */
+        ModelArchitecture: {
+            /** Family */
+            family?: string | null;
+            /** Head Dim */
+            head_dim: number;
+            /** Hidden Size */
+            hidden_size: number;
+            /** Num Attention Heads */
+            num_attention_heads: number;
+            /** Num Kv Heads */
+            num_kv_heads: number;
+            /** Num Layers */
+            num_layers: number;
+            /** Sliding Window */
+            sliding_window?: number | null;
+            /** Vocab Size */
+            vocab_size?: number | null;
+        };
+        /** ModelReference */
+        ModelReference: {
+            architecture?: components["schemas"]["ModelArchitecture"] | null;
+            /** Context Length Max */
+            context_length_max?: number | null;
+            /** Display Name */
+            display_name: string;
+            /** Field Sources */
+            field_sources?: {
+                [key: string]: components["schemas"]["Provenance"];
+            };
+            /** Id */
+            id: string;
+            /** License */
+            license?: string | null;
+            /** License Url */
+            license_url?: string | null;
+            /** Notes */
+            notes?: string[];
+            /**
+             * Origin
+             * @default user
+             * @enum {string}
+             */
+            origin: "curated" | "user";
+            /** Parameter Count */
+            parameter_count?: number | null;
+            /** Path */
+            path?: string | null;
+            /** Quantization */
+            quantization?: string | null;
+            /** Repo */
+            repo?: string | null;
+            /**
+             * Requires Custom Code
+             * @default false
+             */
+            requires_custom_code: boolean;
+            /** Revision */
+            revision?: string | null;
+            /**
+             * Schema Version
+             * @default 1
+             */
+            schema_version: number;
+            /** Sha256 */
+            sha256?: {
+                [key: string]: string;
+            };
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "huggingface" | "local" | "url";
+            /** Supported Runtimes */
+            supported_runtimes?: string[];
+            /** Weight Bytes */
+            weight_bytes?: number | null;
+            /** Weight Format */
+            weight_format?: ("gguf" | "safetensors" | "pytorch" | "tensorrt_engine" | "other") | null;
         };
         /** Objective */
         Objective: {
@@ -256,6 +629,51 @@ export interface components {
              * @default false
              */
             enabled: boolean;
+        };
+        /** PreflightReport */
+        PreflightReport: {
+            /** Devices */
+            devices: components["schemas"]["DeviceFit"][];
+            estimate: components["schemas"]["MemoryEstimate"] | null;
+            /** Messages */
+            messages?: string[];
+            /** Model Id */
+            model_id: string;
+            /** Runtimes */
+            runtimes: components["schemas"]["RuntimeCompatibility"][];
+            /**
+             * Verdict
+             * @enum {string}
+             */
+            verdict: "fits" | "tight" | "does_not_fit" | "unknown";
+        };
+        /** PreflightRequest */
+        PreflightRequest: {
+            inputs?: components["schemas"]["EstimateInputs"];
+            /** Model Id */
+            model_id: string;
+            /**
+             * Rescan
+             * @default false
+             */
+            rescan: boolean;
+            /** Runtimes */
+            runtimes?: string[] | null;
+        };
+        /**
+         * Provenance
+         * @description Where a value came from. Never present an inferred value as detected.
+         * @enum {string}
+         */
+        Provenance: "detected" | "inferred" | "user_specified";
+        /** RuntimeCompatibility */
+        RuntimeCompatibility: {
+            /** Compatible */
+            compatible: boolean;
+            /** Reasons */
+            reasons?: string[];
+            /** Runtime */
+            runtime: string;
         };
         /** SearchSpec */
         SearchSpec: {
@@ -447,6 +865,53 @@ export interface operations {
             };
         };
     };
+    get_hardware: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HardwareProfile"];
+                };
+            };
+            /** @description No scan has been saved yet */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    scan_hardware: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HardwareProfile"];
+                };
+            };
+        };
+    };
     health: {
         parameters: {
             query?: never;
@@ -487,6 +952,185 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["JobValidation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_models: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelReference"][];
+                };
+            };
+        };
+    };
+    add_model: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocalModelRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelReference"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    inspect_model: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LocalModelRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelReference"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_model: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                model_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelReference"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_model: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                model_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preflight: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PreflightRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreflightReport"];
                 };
             };
             /** @description Validation Error */

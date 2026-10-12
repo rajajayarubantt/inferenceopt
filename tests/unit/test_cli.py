@@ -59,3 +59,31 @@ def test_bad_config_exit_code(tmp_path: Path) -> None:
 def test_ui_refuses_remote_bind_without_flag() -> None:
     result = runner.invoke(app, ["ui", "--host", "0.0.0.0", "--no-browser"])
     assert result.exit_code == 2
+
+
+def test_hardware_scan_and_show() -> None:
+    assert runner.invoke(app, ["hardware", "show"]).exit_code == 1
+    result = runner.invoke(app, ["hardware", "scan", "--json"])
+    assert result.exit_code == 0
+    assert json.loads(result.stdout)["devices"][0]["device_id"] == "cpu0"
+    assert runner.invoke(app, ["hardware", "show"]).exit_code == 0
+
+
+def test_models_add_inspect_preflight_remove(tmp_path: Path) -> None:
+    from tests.helpers import llama_gguf
+
+    path = llama_gguf(tmp_path / "tiny.gguf")
+    assert runner.invoke(app, ["models", "inspect", str(path)]).exit_code == 0
+    assert runner.invoke(app, ["models", "add", str(path)]).exit_code == 0
+    listed = json.loads(runner.invoke(app, ["models", "list", "--json"]).stdout)
+    assert "local:tiny" in {m["id"] for m in listed}
+
+    result = runner.invoke(
+        app, ["preflight", "local:tiny", "--runtime", "llamacpp", "--context", "1024", "--json"]
+    )
+    assert result.exit_code == 0, result.stdout
+    assert json.loads(result.stdout)["verdict"] in {"fits", "tight"}
+
+    assert runner.invoke(app, ["preflight", "local:tiny", "--kv-dtype", "q2"]).exit_code == 2
+    assert runner.invoke(app, ["preflight", "nope:missing"]).exit_code == 1
+    assert runner.invoke(app, ["models", "remove", "local:tiny"]).exit_code == 0

@@ -127,3 +127,63 @@ def test_missing_ui_shows_help(ctx: AppContext, tmp_path: Path) -> None:
     app = create_app(ctx, token=TOKEN, ui_dir=tmp_path / "empty")
     with TestClient(app, base_url="http://127.0.0.1:8765") as c:
         assert "no built web UI" in c.get("/").text
+
+
+# --- Phase 2: inventory ---------------------------------------------------------------
+
+
+def test_hardware_endpoints(client: TestClient) -> None:
+    assert client.get("/api/v1/hardware", headers=auth()).status_code == 404
+    scanned = client.post("/api/v1/hardware/scan", headers=auth())
+    assert scanned.status_code == 200
+    assert scanned.json()["devices"][0]["device_id"] == "cpu0"
+    assert client.get("/api/v1/hardware", headers=auth()).json()["id"] == scanned.json()["id"]
+
+
+def test_model_endpoints(client: TestClient, tmp_path: Path) -> None:
+    from tests.helpers import llama_gguf
+
+    path = str(llama_gguf(tmp_path / "tiny.gguf"))
+    models = client.get("/api/v1/models", headers=auth()).json()
+    assert any(m["origin"] == "curated" for m in models)
+
+    preview = client.post("/api/v1/models/inspect", json={"path": path}, headers=auth())
+    assert preview.json()["architecture"]["num_layers"] == 4
+    assert (
+        client.post(
+            "/api/v1/models/inspect", json={"path": "relative.gguf"}, headers=auth()
+        ).status_code
+        == 422
+    )
+
+    added = client.post("/api/v1/models", json={"path": path}, headers=auth())
+    assert added.status_code == 201
+    model_id = added.json()["id"]
+    assert client.post("/api/v1/models", json={"path": path}, headers=auth()).status_code == 409
+    assert client.get(f"/api/v1/models/{model_id}", headers=auth()).json()["id"] == model_id
+
+    report = client.post(
+        "/api/v1/preflight",
+        json={"model_id": model_id, "inputs": {"context_tokens": 1024}, "runtimes": ["llamacpp"]},
+        headers=auth(),
+    )
+    assert report.status_code == 200
+    assert report.json()["estimate"]["kind"] == "estimate"
+
+    assert client.delete(f"/api/v1/models/{model_id}", headers=auth()).status_code == 204
+    assert client.get(f"/api/v1/models/{model_id}", headers=auth()).status_code == 404
+
+
+def test_curated_model_with_slash_in_id(client: TestClient) -> None:
+    resp = client.get("/api/v1/models/hf:Qwen/Qwen2.5-0.5B-Instruct", headers=auth())
+    assert resp.status_code == 200
+    assert (
+        client.delete("/api/v1/models/hf:Qwen/Qwen2.5-0.5B-Instruct", headers=auth()).status_code
+        == 409
+    )
+    bad = client.post(
+        "/api/v1/preflight",
+        json={"model_id": "hf:Qwen/Qwen2.5-0.5B-Instruct", "runtimes": ["bogus"]},
+        headers=auth(),
+    )
+    assert bad.status_code == 422

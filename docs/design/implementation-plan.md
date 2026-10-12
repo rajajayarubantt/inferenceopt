@@ -275,8 +275,7 @@ Each phase lists **Backend**, **UI**, **Packaging/CI** and **Exit criteria**. A 
 
 ### Phase 1: Skeleton, packaging pipeline and UI shell
 
-> **Status (2026-10-12): implemented locally, not yet published.** Remaining: push to
-> GitHub, configure Trusted Publishing (see `docs/releasing.md`), tag `v0.0.1`. Deviations:
+> **Status (2026-10-12): implemented and pushed; CI green.** Remaining: configure Trusted Publishing (see `docs/releasing.md`), tag `v0.0.1`. Deviations:
 > ESLint + Prettier instead of Biome, TypeScript pinned to 5.9 (see ADR 0001).
 
 **Backend**
@@ -305,6 +304,9 @@ Each phase lists **Backend**, **UI**, **Packaging/CI** and **Exit criteria**. A 
 ---
 
 ### Phase 2: Hardware and model inventory
+
+> **Status (2026-10-12): implemented.** Smoke tests that start a runtime move to Phase 3,
+> where the adapters exist. GPU detection verified on an RTX 3050 Laptop GPU (Windows).
 
 **Backend**
 - CPU, RAM, OS and Python detection (`psutil`, `platform`, CPU flags via `/proc/cpuinfo`, `sysctl` or `cpuid`).

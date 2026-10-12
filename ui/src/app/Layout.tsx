@@ -6,8 +6,8 @@ type NavItem = { to: string; label: string; phase?: number };
 
 const NAV: NavItem[] = [
   { to: "/", label: "Dashboard" },
-  { to: "/hardware", label: "Hardware", phase: 2 },
-  { to: "/models", label: "Models", phase: 2 },
+  { to: "/hardware", label: "Hardware" },
+  { to: "/models", label: "Models" },
   { to: "/runtimes", label: "Runtimes", phase: 3 },
   { to: "/jobs", label: "Jobs" },
   { to: "/planner", label: "LLM Planner", phase: 6 },

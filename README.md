@@ -9,9 +9,9 @@ deployment bundle. Everything is available from a **web UI**, a **CLI** and a **
 An LLM planner (any provider via LiteLLM) is optional; every claim is backed by
 measurements, never by the LLM.
 
-> **Status: pre-alpha (Phase 1 of the [implementation plan](docs/design/implementation-plan.md)).**
-> The project skeleton, configuration, storage, CLI and UI shell exist. Hardware scanning,
-> runtimes, benchmarking and optimization are not implemented yet.
+> **Status: pre-alpha (Phase 2 of the [implementation plan](docs/design/implementation-plan.md)).**
+> Hardware scanning, the model registry and memory/fit estimates work. Runtimes,
+> benchmarking and optimization are not implemented yet.
 
 ## Install
 
@@ -30,6 +30,9 @@ processes, so install the ones you want (for example `llama-server` from
 ```bash
 inferenceopt doctor                        # check the environment
 inferenceopt ui                            # open the web UI (prints a private URL)
+inferenceopt hardware scan                 # CPUs, GPUs, memory (read-only)
+inferenceopt models add ./model-q4_k_m.gguf # register a local model (headers only)
+inferenceopt preflight local:model-q4_k_m --context 8192   # will it fit?
 inferenceopt job validate configs/example-job.yaml
 ```
 

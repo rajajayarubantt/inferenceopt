@@ -3,17 +3,23 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Annotated
 
 import typer
-from rich.console import Console
 from rich.markup import escape
 from rich.table import Table
 
 from inferenceopt import services
-from inferenceopt.config import ConfigError
+from inferenceopt.cli.common import (
+    ConfigOption,
+    JsonOption,
+    console,
+    err_console,
+    open_context,
+    print_json,
+)
+from inferenceopt.cli.inventory import hardware_app, models_app, preflight
 from inferenceopt.config.redaction import redact
 
 app = typer.Typer(
@@ -26,29 +32,11 @@ config_app = typer.Typer(help="Inspect configuration.", no_args_is_help=True)
 job_app = typer.Typer(help="Work with optimization job files.", no_args_is_help=True)
 app.add_typer(config_app, name="config")
 app.add_typer(job_app, name="job")
-
-console = Console()
-err_console = Console(stderr=True)
-
-ConfigOption = Annotated[
-    Path | None,
-    typer.Option("--config", "-c", help="Config file (default: per-user config.yaml)."),
-]
-JsonOption = Annotated[bool, typer.Option("--json", help="Machine-readable JSON output.")]
+app.add_typer(hardware_app, name="hardware")
+app.add_typer(models_app, name="models")
+app.command()(preflight)
 
 _STATUS_STYLE = {"ok": "green", "info": "blue", "warn": "yellow", "fail": "red"}
-
-
-def _open(config: Path | None) -> services.AppContext:
-    try:
-        return services.AppContext.open(config)
-    except ConfigError as exc:
-        err_console.print(f"[red]Configuration error:[/] {exc}")
-        raise typer.Exit(2) from exc
-
-
-def _print_json(data: Any) -> None:
-    console.print_json(json.dumps(data, default=str))
 
 
 @app.command()
@@ -56,7 +44,7 @@ def version(as_json: JsonOption = False) -> None:
     """Show version information."""
     info = services.version_info()
     if as_json:
-        _print_json(info.model_dump())
+        print_json(info.model_dump())
     else:
         console.print(f"inferenceopt {info.inferenceopt} (Python {info.python}, {info.platform})")
 
@@ -64,13 +52,13 @@ def version(as_json: JsonOption = False) -> None:
 @app.command()
 def doctor(config: ConfigOption = None, as_json: JsonOption = False) -> None:
     """Check the installation and environment."""
-    ctx = _open(config)
+    ctx = open_context(config)
     try:
         report = services.doctor(ctx)
     finally:
         ctx.close()
     if as_json:
-        _print_json(report.model_dump())
+        print_json(report.model_dump())
     else:
         table = Table(title=f"inferenceopt {report.version.inferenceopt}", show_lines=False)
         table.add_column("Check")
@@ -90,16 +78,16 @@ def doctor(config: ConfigOption = None, as_json: JsonOption = False) -> None:
 @config_app.command("show")
 def config_show(config: ConfigOption = None, as_json: JsonOption = False) -> None:
     """Print the effective configuration (secrets are never shown)."""
-    ctx = _open(config)
+    ctx = open_context(config)
     try:
         data = redact(services.public_config(ctx))
     finally:
         ctx.close()
     if as_json:
-        _print_json(data)
+        print_json(data)
     else:
         console.print(f"[dim]config file: {ctx.config_path}[/]")
-        _print_json(data)
+        print_json(data)
 
 
 @job_app.command("validate")
@@ -110,7 +98,7 @@ def job_validate(
     """Validate a job YAML file against the schema."""
     result = services.validate_job_file(file)
     if as_json:
-        _print_json(result.model_dump(mode="json"))
+        print_json(result.model_dump(mode="json"))
     elif result.ok and result.job is not None:
         console.print(f"[green]OK[/] {file} is valid (job {result.job.name!r})")
     else:
@@ -134,7 +122,7 @@ def ui(
     """Start the web UI."""
     from inferenceopt.server.run import RemoteBindError, serve
 
-    ctx = _open(config)
+    ctx = open_context(config)
     try:
         serve(
             ctx,

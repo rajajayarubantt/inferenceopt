@@ -2,7 +2,9 @@
 import { createRootRoute, createRoute, createRouter } from "@tanstack/react-router";
 import { Dashboard } from "../pages/Dashboard";
 import { Doctor } from "../pages/Doctor";
+import { Hardware } from "../pages/Hardware";
 import { Jobs } from "../pages/Jobs";
+import { Models } from "../pages/Models";
 import { Planned } from "../pages/Planned";
 import { Settings } from "../pages/Settings";
 import { Layout } from "./Layout";
@@ -17,13 +19,8 @@ const planned = <P extends string>(path: P, title: string, phase: number, summar
 
 const routeTree = rootRoute.addChildren([
   page("/", Dashboard),
-  planned(
-    "/hardware",
-    "Hardware",
-    2,
-    "Scan CPUs, GPUs and memory, with detected vs. inferred values.",
-  ),
-  planned("/models", "Models", 2, "Browse the model registry, add local models, check licenses."),
+  page("/hardware", Hardware),
+  page("/models", Models),
   planned("/runtimes", "Runtimes", 3, "Configure llama.cpp, vLLM and TensorRT-LLM."),
   page("/jobs", Jobs),
   planned(

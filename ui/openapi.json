@@ -105,6 +105,158 @@
         "title": "DeploymentOptions",
         "type": "object"
       },
+      "Device": {
+        "additionalProperties": false,
+        "properties": {
+          "architecture": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Architecture"
+          },
+          "backend": {
+            "$ref": "#/components/schemas/DeviceBackend"
+          },
+          "compute_capability": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compute Capability"
+          },
+          "device_id": {
+            "title": "Device Id",
+            "type": "string"
+          },
+          "driver_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Version"
+          },
+          "field_sources": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Provenance"
+            },
+            "title": "Field Sources",
+            "type": "object"
+          },
+          "memory_free_bytes": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Free Bytes"
+          },
+          "memory_total_bytes": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Total Bytes"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "supported_dtypes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Supported Dtypes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "device_id",
+          "backend",
+          "name"
+        ],
+        "title": "Device",
+        "type": "object"
+      },
+      "DeviceBackend": {
+        "enum": [
+          "cpu",
+          "cuda",
+          "rocm",
+          "metal",
+          "other"
+        ],
+        "title": "DeviceBackend",
+        "type": "string"
+      },
+      "DeviceFit": {
+        "additionalProperties": false,
+        "properties": {
+          "available_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Available Bytes"
+          },
+          "device_id": {
+            "title": "Device Id",
+            "type": "string"
+          },
+          "device_name": {
+            "title": "Device Name",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "verdict": {
+            "enum": [
+              "fits",
+              "tight",
+              "does_not_fit",
+              "unknown"
+            ],
+            "title": "Verdict",
+            "type": "string"
+          }
+        },
+        "required": [
+          "device_id",
+          "device_name",
+          "available_bytes",
+          "verdict",
+          "reason"
+        ],
+        "title": "DeviceFit",
+        "type": "object"
+      },
       "DoctorCheck": {
         "properties": {
           "detail": {
@@ -165,6 +317,61 @@
         "title": "DoctorReport",
         "type": "object"
       },
+      "EstimateInputs": {
+        "additionalProperties": false,
+        "properties": {
+          "batch_tokens": {
+            "default": 512,
+            "exclusiveMinimum": 0.0,
+            "title": "Batch Tokens",
+            "type": "integer"
+          },
+          "concurrency": {
+            "default": 1,
+            "exclusiveMinimum": 0.0,
+            "title": "Concurrency",
+            "type": "integer"
+          },
+          "context_tokens": {
+            "default": 4096,
+            "exclusiveMinimum": 0.0,
+            "title": "Context Tokens",
+            "type": "integer"
+          },
+          "flash_attention": {
+            "default": true,
+            "title": "Flash Attention",
+            "type": "boolean"
+          },
+          "kv_cache_dtype": {
+            "default": "f16",
+            "enum": [
+              "f32",
+              "f16",
+              "bf16",
+              "q8_0",
+              "q4_0",
+              "fp8"
+            ],
+            "title": "Kv Cache Dtype",
+            "type": "string"
+          },
+          "weight_bits_per_param": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight Bits Per Param"
+          }
+        },
+        "title": "EstimateInputs",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -178,6 +385,54 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "HardwareProfile": {
+        "additionalProperties": false,
+        "properties": {
+          "captured_at": {
+            "format": "date-time",
+            "title": "Captured At",
+            "type": "string"
+          },
+          "devices": {
+            "items": {
+              "$ref": "#/components/schemas/Device"
+            },
+            "title": "Devices",
+            "type": "array"
+          },
+          "host": {
+            "$ref": "#/components/schemas/HostInfo"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "runtime_versions": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Runtime Versions",
+            "type": "object"
+          },
+          "schema_version": {
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "host"
+        ],
+        "title": "HardwareProfile",
+        "type": "object"
+      },
       "Health": {
         "properties": {
           "status": {
@@ -188,6 +443,97 @@
           }
         },
         "title": "Health",
+        "type": "object"
+      },
+      "HostInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "cpu_arch": {
+            "title": "Cpu Arch",
+            "type": "string"
+          },
+          "cpu_flags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Cpu Flags",
+            "type": "array"
+          },
+          "cpu_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cpu Model"
+          },
+          "logical_cores": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logical Cores"
+          },
+          "os": {
+            "title": "Os",
+            "type": "string"
+          },
+          "os_version": {
+            "title": "Os Version",
+            "type": "string"
+          },
+          "physical_cores": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Physical Cores"
+          },
+          "python_version": {
+            "title": "Python Version",
+            "type": "string"
+          },
+          "ram_available_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ram Available Bytes"
+          },
+          "ram_total_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ram Total Bytes"
+          }
+        },
+        "required": [
+          "os",
+          "os_version",
+          "python_version",
+          "cpu_arch"
+        ],
+        "title": "HostInfo",
         "type": "object"
       },
       "JobValidation": {
@@ -219,6 +565,391 @@
           "ok"
         ],
         "title": "JobValidation",
+        "type": "object"
+      },
+      "LocalModelRequest": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Registry id (default: derived from name)",
+            "title": "Id"
+          },
+          "path": {
+            "description": "Absolute path to a .gguf file or HF directory",
+            "minLength": 1,
+            "title": "Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "title": "LocalModelRequest",
+        "type": "object"
+      },
+      "MemoryComponent": {
+        "additionalProperties": false,
+        "properties": {
+          "basis": {
+            "title": "Basis",
+            "type": "string"
+          },
+          "bytes": {
+            "minimum": 0.0,
+            "title": "Bytes",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "bytes",
+          "basis"
+        ],
+        "title": "MemoryComponent",
+        "type": "object"
+      },
+      "MemoryEstimate": {
+        "additionalProperties": false,
+        "description": "Always an estimate: actual memory must be measured (Plan.md \u00a77.2).",
+        "properties": {
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/MemoryComponent"
+            },
+            "title": "Components",
+            "type": "array"
+          },
+          "expected_bytes": {
+            "title": "Expected Bytes",
+            "type": "integer"
+          },
+          "high_bytes": {
+            "title": "High Bytes",
+            "type": "integer"
+          },
+          "inputs": {
+            "$ref": "#/components/schemas/EstimateInputs"
+          },
+          "kind": {
+            "const": "estimate",
+            "default": "estimate",
+            "title": "Kind",
+            "type": "string"
+          },
+          "low_bytes": {
+            "title": "Low Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "low_bytes",
+          "expected_bytes",
+          "high_bytes",
+          "components",
+          "assumptions",
+          "inputs"
+        ],
+        "title": "MemoryEstimate",
+        "type": "object"
+      },
+      "ModelArchitecture": {
+        "additionalProperties": false,
+        "description": "Shape parameters needed for memory estimation. All values describe one model copy.",
+        "properties": {
+          "family": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Family"
+          },
+          "head_dim": {
+            "exclusiveMinimum": 0.0,
+            "title": "Head Dim",
+            "type": "integer"
+          },
+          "hidden_size": {
+            "exclusiveMinimum": 0.0,
+            "title": "Hidden Size",
+            "type": "integer"
+          },
+          "num_attention_heads": {
+            "exclusiveMinimum": 0.0,
+            "title": "Num Attention Heads",
+            "type": "integer"
+          },
+          "num_kv_heads": {
+            "exclusiveMinimum": 0.0,
+            "title": "Num Kv Heads",
+            "type": "integer"
+          },
+          "num_layers": {
+            "exclusiveMinimum": 0.0,
+            "title": "Num Layers",
+            "type": "integer"
+          },
+          "sliding_window": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sliding Window"
+          },
+          "vocab_size": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vocab Size"
+          }
+        },
+        "required": [
+          "num_layers",
+          "hidden_size",
+          "num_attention_heads",
+          "num_kv_heads",
+          "head_dim"
+        ],
+        "title": "ModelArchitecture",
+        "type": "object"
+      },
+      "ModelReference": {
+        "additionalProperties": false,
+        "properties": {
+          "architecture": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelArchitecture"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "context_length_max": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context Length Max"
+          },
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "field_sources": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Provenance"
+            },
+            "title": "Field Sources",
+            "type": "object"
+          },
+          "id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,199}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "license": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License"
+          },
+          "license_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License Url"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "origin": {
+            "default": "user",
+            "enum": [
+              "curated",
+              "user"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "parameter_count": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parameter Count"
+          },
+          "path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Path"
+          },
+          "quantization": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quantization"
+          },
+          "repo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repo"
+          },
+          "requires_custom_code": {
+            "default": false,
+            "title": "Requires Custom Code",
+            "type": "boolean"
+          },
+          "revision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revision"
+          },
+          "schema_version": {
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "sha256": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Sha256",
+            "type": "object"
+          },
+          "source": {
+            "enum": [
+              "huggingface",
+              "local",
+              "url"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "supported_runtimes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Supported Runtimes",
+            "type": "array"
+          },
+          "weight_bytes": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight Bytes"
+          },
+          "weight_format": {
+            "anyOf": [
+              {
+                "enum": [
+                  "gguf",
+                  "safetensors",
+                  "pytorch",
+                  "tensorrt_engine",
+                  "other"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight Format"
+          }
+        },
+        "required": [
+          "id",
+          "display_name",
+          "source"
+        ],
+        "title": "ModelReference",
         "type": "object"
       },
       "Objective": {
@@ -349,6 +1080,136 @@
           }
         },
         "title": "PlannerOptions",
+        "type": "object"
+      },
+      "PreflightReport": {
+        "additionalProperties": false,
+        "properties": {
+          "devices": {
+            "items": {
+              "$ref": "#/components/schemas/DeviceFit"
+            },
+            "title": "Devices",
+            "type": "array"
+          },
+          "estimate": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MemoryEstimate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "messages": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Messages",
+            "type": "array"
+          },
+          "model_id": {
+            "title": "Model Id",
+            "type": "string"
+          },
+          "runtimes": {
+            "items": {
+              "$ref": "#/components/schemas/RuntimeCompatibility"
+            },
+            "title": "Runtimes",
+            "type": "array"
+          },
+          "verdict": {
+            "enum": [
+              "fits",
+              "tight",
+              "does_not_fit",
+              "unknown"
+            ],
+            "title": "Verdict",
+            "type": "string"
+          }
+        },
+        "required": [
+          "model_id",
+          "estimate",
+          "devices",
+          "runtimes",
+          "verdict"
+        ],
+        "title": "PreflightReport",
+        "type": "object"
+      },
+      "PreflightRequest": {
+        "properties": {
+          "inputs": {
+            "$ref": "#/components/schemas/EstimateInputs"
+          },
+          "model_id": {
+            "title": "Model Id",
+            "type": "string"
+          },
+          "rescan": {
+            "default": false,
+            "title": "Rescan",
+            "type": "boolean"
+          },
+          "runtimes": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runtimes"
+          }
+        },
+        "required": [
+          "model_id"
+        ],
+        "title": "PreflightRequest",
+        "type": "object"
+      },
+      "Provenance": {
+        "description": "Where a value came from. Never present an inferred value as detected.",
+        "enum": [
+          "detected",
+          "inferred",
+          "user_specified"
+        ],
+        "title": "Provenance",
+        "type": "string"
+      },
+      "RuntimeCompatibility": {
+        "additionalProperties": false,
+        "properties": {
+          "compatible": {
+            "title": "Compatible",
+            "type": "boolean"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reasons",
+            "type": "array"
+          },
+          "runtime": {
+            "title": "Runtime",
+            "type": "string"
+          }
+        },
+        "required": [
+          "runtime",
+          "compatible"
+        ],
+        "title": "RuntimeCompatibility",
         "type": "object"
       },
       "SearchSpec": {
@@ -679,6 +1540,53 @@
         ]
       }
     },
+    "/api/v1/hardware": {
+      "get": {
+        "description": "The most recent saved hardware scan.",
+        "operationId": "get_hardware",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HardwareProfile"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "No scan has been saved yet"
+          }
+        },
+        "summary": "Get Hardware",
+        "tags": [
+          "inventory"
+        ]
+      }
+    },
+    "/api/v1/hardware/scan": {
+      "post": {
+        "description": "Scan the hardware now (read-only) and save the result.",
+        "operationId": "scan_hardware",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HardwareProfile"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Scan Hardware",
+        "tags": [
+          "inventory"
+        ]
+      }
+    },
     "/api/v1/health": {
       "get": {
         "description": "Liveness probe. Unauthenticated and reveals nothing.",
@@ -739,6 +1647,231 @@
         "summary": "Validate Job",
         "tags": [
           "jobs"
+        ]
+      }
+    },
+    "/api/v1/models": {
+      "get": {
+        "operationId": "list_models",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ModelReference"
+                  },
+                  "title": "Response List Models",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Models",
+        "tags": [
+          "inventory"
+        ]
+      },
+      "post": {
+        "description": "Register a local model (reads headers only; nothing is copied or downloaded).",
+        "operationId": "add_model",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocalModelRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelReference"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Model",
+        "tags": [
+          "inventory"
+        ]
+      }
+    },
+    "/api/v1/models/inspect": {
+      "post": {
+        "description": "Read a local model's metadata (headers only) without registering it.",
+        "operationId": "inspect_model",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocalModelRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelReference"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Inspect Model",
+        "tags": [
+          "inventory"
+        ]
+      }
+    },
+    "/api/v1/models/{model_id}": {
+      "delete": {
+        "description": "Remove a user-added model from the registry. Files on disk are never touched.",
+        "operationId": "remove_model",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "model_id",
+            "required": true,
+            "schema": {
+              "title": "Model Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Remove Model",
+        "tags": [
+          "inventory"
+        ]
+      },
+      "get": {
+        "operationId": "get_model",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "model_id",
+            "required": true,
+            "schema": {
+              "title": "Model Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelReference"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Model",
+        "tags": [
+          "inventory"
+        ]
+      }
+    },
+    "/api/v1/preflight": {
+      "post": {
+        "description": "Estimate memory and check whether the model fits each device. Never loads weights.",
+        "operationId": "preflight",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreflightRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreflightReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Preflight",
+        "tags": [
+          "inventory"
         ]
       }
     },
