@@ -30,7 +30,7 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm build
 
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v7
       - name: Build sdist and wheel
         run: uv build
 
@@ -75,7 +75,7 @@ jobs:
         with:
           name: dist
           path: dist
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v7
         with:
           python-version: "3.12"
       - name: Install wheel into a clean environment (no Node available to it)
