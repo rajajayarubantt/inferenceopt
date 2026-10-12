@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Generated at build time
+src/inferenceopt/_version.py
+src/inferenceopt/_ui/
+
+# UI
+ui/node_modules/
+ui/dist/
+ui/test-results/
+ui/playwright-report/
+ui/*.tsbuildinfo
+
+# Docs
+site/
+
+# Local data
+*.sqlite
+*.db
+.env
+.env.*
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

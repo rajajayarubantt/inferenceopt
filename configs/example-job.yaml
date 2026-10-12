@@ -1,0 +1,30 @@
+# Example optimization job. Validate with:  inferenceopt job validate configs/example-job.yaml
+# Values are illustrative, not guaranteed to be feasible on your hardware.
+job:
+  name: local-chat-latency
+  model: hf:Qwen/Qwen2.5-0.5B-Instruct-GGUF
+  hardware: [auto]
+  runtimes: [llamacpp]
+  objective:
+    metric: latency_ms_p95
+    direction: minimize
+  constraints:
+    peak_memory_gib_max: 8
+    context_tokens_min: 4096
+    quality_regression_max_percent: 1.0
+  workload:
+    concurrency: [1, 4]
+    prompt_tokens: [512, 2048]
+    generation_tokens: [128, 256]
+  search:
+    strategy: constrained_search
+    max_trials: 20
+    max_wall_time_minutes: 60
+    repetitions: 3
+  llm_planner:
+    enabled: false
+  deployment:
+    generate_container: true
+    export_model_artifact: false
+  permissions:
+    allow_downloads: false

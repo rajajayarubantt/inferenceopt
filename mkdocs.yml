@@ -1,0 +1,48 @@
+site_name: InferenceOpt
+site_description: Hardware-aware, measurement-driven LLM inference optimization
+repo_url: https://github.com/rajajayarubantt/inferenceopt
+edit_uri: edit/main/docs/
+copyright: Copyright 2026 The InferenceOpt Authors. Apache-2.0.
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      toggle: { icon: material/brightness-7, name: Dark mode }
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      toggle: { icon: material/brightness-4, name: Light mode }
+
+markdown_extensions:
+  - admonition
+  - tables
+  - toc: { permalink: true }
+  - pymdownx.superfences
+  - pymdownx.highlight
+
+nav:
+  - Home: index.md
+  - Getting started:
+      - Installation: installation.md
+      - Quick start: quickstart.md
+      - Configuration: configuration.md
+  - Safety: safety.md
+  - Development:
+      - Architecture: architecture.md
+      - Releasing: releasing.md
+      - Decisions:
+          - adr/index.md
+          - adr/0001-web-ui-stack.md
+          - adr/0002-runtimes-as-external-processes.md
+          - adr/0003-services-layer.md
+          - adr/0004-license-apache-2.md
+          - adr/0005-local-server-auth.md
+  - Design:
+      - Product plan: design/plan.md
+      - Implementation plan: design/implementation-plan.md

@@ -1,0 +1,99 @@
+# Reusable: build the UI and the Python distributions, then smoke-test the installed
+# wheel on every OS. Used by ci.yml and release.yml so releases ship exactly what CI tested.
+name: Build
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  dist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # hatch-vcs derives the version from git tags
+
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: ui/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: ui/pnpm-lock.yaml
+      - name: Build UI
+        working-directory: ui
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      - uses: astral-sh/setup-uv@v6
+      - name: Build sdist and wheel
+        run: uv build
+
+      - name: Check distributions
+        run: |
+          uvx twine check --strict dist/*
+          python - <<'EOF'
+          import pathlib, sys, zipfile
+          wheel = next(pathlib.Path("dist").glob("*.whl"))
+          names = set(zipfile.ZipFile(wheel).namelist())
+          required = [
+              "inferenceopt/_ui/index.html",
+              "inferenceopt/_ui/THIRD_PARTY_LICENSES.txt",
+              "inferenceopt/storage/migrations/versions/0001_initial.py",
+              "inferenceopt/py.typed",
+          ]
+          missing = [r for r in required if r not in names]
+          licenses = [n for n in names if n.endswith(("licenses/LICENSE", "licenses/NOTICE"))]
+          if missing or len(licenses) != 2:
+              sys.exit(f"wheel is incomplete: missing={missing} licenses={licenses}")
+          print(f"{wheel.name}: OK ({len(names)} files)")
+          EOF
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+
+  smoke:
+    needs: dist
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - name: Install wheel into a clean environment (no Node available to it)
+        run: |
+          uv venv clean-env
+          uv pip install --python clean-env dist/*.whl
+      - name: CLI and server smoke test
+        env:
+          INFERENCEOPT_HOME: ${{ runner.temp }}/home
+          INFERENCEOPT_SERVER__TOKEN: ci-smoke-token
+        run: |
+          if [ -d clean-env/Scripts ]; then BIN=clean-env/Scripts; else BIN=clean-env/bin; fi
+          "$BIN/inferenceopt" version
+          "$BIN/inferenceopt" doctor
+          "$BIN/iopt" version
+          "$BIN/inferenceopt" ui --no-browser --port 8765 &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:8765/api/v1/health && break; sleep 1; done
+          curl -sf http://127.0.0.1:8765/ | grep -q '<div id="root">'
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8765/api/v1/version)" = 401
+          curl -sf -H "Authorization: Bearer ci-smoke-token" http://127.0.0.1:8765/api/v1/doctor
+          kill %1

@@ -1,0 +1,136 @@
+[build-system]
+requires = ["hatchling>=1.27", "hatch-vcs>=0.4"]
+build-backend = "hatchling.build"
+
+[project]
+name = "inferenceopt"
+dynamic = ["version"]
+description = "Hardware-aware, measurement-driven LLM inference optimization with a built-in web UI."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [{ name = "The InferenceOpt Authors", email = "rajajayarubant@gmail.com" }]
+keywords = ["llm", "inference", "optimization", "benchmark", "llama.cpp", "vllm", "tensorrt-llm"]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Environment :: Web Environment",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Typing :: Typed",
+]
+dependencies = [
+  "alembic>=1.13",
+  "fastapi>=0.115",
+  "httpx>=0.27",
+  "platformdirs>=4.2",
+  "pydantic>=2.7",
+  "pydantic-settings>=2.3",
+  "pyyaml>=6.0",
+  "rich>=13.7",
+  "sqlalchemy>=2.0",
+  "typer>=0.12",
+  "uvicorn[standard]>=0.30",
+]
+
+[project.optional-dependencies]
+llm = ["litellm"]
+optimize = ["optuna>=4"]
+all = ["inferenceopt[llm,optimize]"]
+
+[project.scripts]
+inferenceopt = "inferenceopt.cli:main"
+iopt = "inferenceopt.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/rajajayarubantt/inferenceopt"
+Documentation = "https://rajajayarubantt.github.io/inferenceopt"
+Repository = "https://github.com/rajajayarubantt/inferenceopt"
+Issues = "https://github.com/rajajayarubantt/inferenceopt/issues"
+Changelog = "https://github.com/rajajayarubantt/inferenceopt/blob/main/CHANGELOG.md"
+
+[dependency-groups]
+dev = [
+  "hypothesis>=6.100",
+  "mypy>=1.11",
+  "pre-commit>=3.7",
+  "pytest>=8.2",
+  "pytest-cov>=5",
+  "ruff>=0.6",
+  "types-pyyaml",
+]
+docs = ["mkdocs>=1.6,<2", "mkdocs-material>=9.5"]
+
+# --- build -----------------------------------------------------------------
+
+[tool.hatch.version]
+source = "vcs"
+raw-options = { fallback_version = "0.0.0" }
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/inferenceopt/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/inferenceopt"]
+# _ui/ is gitignored (built by `pnpm build`), so it must be listed explicitly.
+artifacts = ["src/inferenceopt/_ui/**"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/inferenceopt", "tests", "LICENSE", "NOTICE", "README.md", "CHANGELOG.md"]
+artifacts = ["src/inferenceopt/_ui/**"]
+
+# --- tools -----------------------------------------------------------------
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "S", "N", "RUF", "PTH", "TID"]
+ignore = ["S101"]  # assert is fine in tests and type narrowing
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S", "PTH"]
+"src/inferenceopt/storage/migrations/**" = ["N999"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+packages = ["inferenceopt"]
+mypy_path = "src"
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["inferenceopt.storage.migrations.*"]
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+pythonpath = ["."]
+markers = [
+  "unit: fast, no external dependencies",
+  "property: hypothesis property tests",
+  "server: FastAPI server tests",
+  "integration_llamacpp: needs a llama-server binary and the tiny test model",
+  "contract: adapter contract tests (no hardware)",
+  "e2e: browser end-to-end tests",
+  "hardware_nvidia: needs an NVIDIA GPU",
+  "hardware_vllm: needs a working vLLM install",
+  "hardware_trtllm: needs a working TensorRT-LLM install",
+]
+
+[tool.coverage.run]
+source = ["inferenceopt"]
+omit = ["*/migrations/*", "*/_version.py"]

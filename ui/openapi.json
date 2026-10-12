@@ -1,0 +1,767 @@
+{
+  "components": {
+    "schemas": {
+      "Constraints": {
+        "additionalProperties": false,
+        "properties": {
+          "context_tokens_min": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context Tokens Min"
+          },
+          "error_rate_max": {
+            "default": 0.0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Error Rate Max",
+            "type": "number"
+          },
+          "latency_ms_p95_max": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latency Ms P95 Max"
+          },
+          "output_tokens_per_second_min": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output Tokens Per Second Min"
+          },
+          "peak_memory_gib_max": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Peak Memory Gib Max"
+          },
+          "quality_regression_max_percent": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": 1.0,
+            "title": "Quality Regression Max Percent"
+          },
+          "ttft_ms_p95_max": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ttft Ms P95 Max"
+          }
+        },
+        "title": "Constraints",
+        "type": "object"
+      },
+      "DeploymentOptions": {
+        "additionalProperties": false,
+        "properties": {
+          "export_model_artifact": {
+            "default": false,
+            "title": "Export Model Artifact",
+            "type": "boolean"
+          },
+          "generate_container": {
+            "default": true,
+            "title": "Generate Container",
+            "type": "boolean"
+          }
+        },
+        "title": "DeploymentOptions",
+        "type": "object"
+      },
+      "DoctorCheck": {
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "hint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hint"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "info",
+              "warn",
+              "fail"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "status",
+          "detail"
+        ],
+        "title": "DoctorCheck",
+        "type": "object"
+      },
+      "DoctorReport": {
+        "properties": {
+          "checks": {
+            "items": {
+              "$ref": "#/components/schemas/DoctorCheck"
+            },
+            "title": "Checks",
+            "type": "array"
+          },
+          "version": {
+            "$ref": "#/components/schemas/VersionInfo"
+          }
+        },
+        "required": [
+          "version",
+          "checks"
+        ],
+        "title": "DoctorReport",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "Health": {
+        "properties": {
+          "status": {
+            "const": "ok",
+            "default": "ok",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "title": "Health",
+        "type": "object"
+      },
+      "JobValidation": {
+        "properties": {
+          "issues": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ValidationIssue"
+            },
+            "title": "Issues",
+            "type": "array"
+          },
+          "job": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OptimizationJob"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok"
+        ],
+        "title": "JobValidation",
+        "type": "object"
+      },
+      "Objective": {
+        "additionalProperties": false,
+        "properties": {
+          "direction": {
+            "enum": [
+              "minimize",
+              "maximize"
+            ],
+            "title": "Direction",
+            "type": "string"
+          },
+          "metric": {
+            "title": "Metric",
+            "type": "string"
+          }
+        },
+        "required": [
+          "metric",
+          "direction"
+        ],
+        "title": "Objective",
+        "type": "object"
+      },
+      "OptimizationJob": {
+        "additionalProperties": false,
+        "properties": {
+          "constraints": {
+            "$ref": "#/components/schemas/Constraints"
+          },
+          "deployment": {
+            "$ref": "#/components/schemas/DeploymentOptions"
+          },
+          "hardware": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Hardware",
+            "type": "array"
+          },
+          "llm_planner": {
+            "$ref": "#/components/schemas/PlannerOptions"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            ],
+            "minLength": 1,
+            "title": "Model"
+          },
+          "name": {
+            "pattern": "^[a-z0-9][a-z0-9._-]{0,63}$",
+            "title": "Name",
+            "type": "string"
+          },
+          "objective": {
+            "$ref": "#/components/schemas/Objective"
+          },
+          "permissions": {
+            "$ref": "#/components/schemas/Permissions"
+          },
+          "require_approval": {
+            "default": true,
+            "title": "Require Approval",
+            "type": "boolean"
+          },
+          "runtimes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Runtimes",
+            "type": "array"
+          },
+          "schema_version": {
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "search": {
+            "$ref": "#/components/schemas/SearchSpec"
+          },
+          "workload": {
+            "$ref": "#/components/schemas/Workload"
+          }
+        },
+        "required": [
+          "name",
+          "model",
+          "objective"
+        ],
+        "title": "OptimizationJob",
+        "type": "object"
+      },
+      "Permissions": {
+        "additionalProperties": false,
+        "properties": {
+          "allow_downloads": {
+            "default": false,
+            "title": "Allow Downloads",
+            "type": "boolean"
+          },
+          "allow_network_in_worker": {
+            "default": false,
+            "title": "Allow Network In Worker",
+            "type": "boolean"
+          }
+        },
+        "title": "Permissions",
+        "type": "object"
+      },
+      "PlannerOptions": {
+        "additionalProperties": false,
+        "properties": {
+          "enabled": {
+            "default": false,
+            "title": "Enabled",
+            "type": "boolean"
+          }
+        },
+        "title": "PlannerOptions",
+        "type": "object"
+      },
+      "SearchSpec": {
+        "additionalProperties": false,
+        "properties": {
+          "max_trials": {
+            "default": 40,
+            "exclusiveMinimum": 0.0,
+            "title": "Max Trials",
+            "type": "integer"
+          },
+          "max_wall_time_minutes": {
+            "default": 180,
+            "exclusiveMinimum": 0.0,
+            "title": "Max Wall Time Minutes",
+            "type": "number"
+          },
+          "repetitions": {
+            "default": 3,
+            "minimum": 1.0,
+            "title": "Repetitions",
+            "type": "integer"
+          },
+          "strategy": {
+            "default": "constrained_search",
+            "enum": [
+              "grid",
+              "random",
+              "constrained_search",
+              "bayesian"
+            ],
+            "title": "Strategy",
+            "type": "string"
+          }
+        },
+        "title": "SearchSpec",
+        "type": "object"
+      },
+      "SessionRequest": {
+        "properties": {
+          "token": {
+            "title": "Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
+        ],
+        "title": "SessionRequest",
+        "type": "object"
+      },
+      "SessionResponse": {
+        "properties": {
+          "authenticated": {
+            "title": "Authenticated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "authenticated"
+        ],
+        "title": "SessionResponse",
+        "type": "object"
+      },
+      "ValidateJobRequest": {
+        "properties": {
+          "yaml": {
+            "title": "Yaml",
+            "type": "string"
+          }
+        },
+        "required": [
+          "yaml"
+        ],
+        "title": "ValidateJobRequest",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "ValidationIssue": {
+        "properties": {
+          "location": {
+            "title": "Location",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "location",
+          "message"
+        ],
+        "title": "ValidationIssue",
+        "type": "object"
+      },
+      "VersionInfo": {
+        "properties": {
+          "inferenceopt": {
+            "title": "Inferenceopt",
+            "type": "string"
+          },
+          "platform": {
+            "title": "Platform",
+            "type": "string"
+          },
+          "python": {
+            "title": "Python",
+            "type": "string"
+          }
+        },
+        "required": [
+          "inferenceopt",
+          "python",
+          "platform"
+        ],
+        "title": "VersionInfo",
+        "type": "object"
+      },
+      "Workload": {
+        "additionalProperties": false,
+        "properties": {
+          "concurrency": {
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1,
+            "title": "Concurrency",
+            "type": "array"
+          },
+          "generation_tokens": {
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1,
+            "title": "Generation Tokens",
+            "type": "array"
+          },
+          "prompt_tokens": {
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1,
+            "title": "Prompt Tokens",
+            "type": "array"
+          },
+          "request_rate_per_s": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Rate Per S"
+          },
+          "seed": {
+            "default": 0,
+            "title": "Seed",
+            "type": "integer"
+          },
+          "trace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trace"
+          }
+        },
+        "title": "Workload",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "InferenceOpt",
+    "version": "0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/auth/session": {
+      "delete": {
+        "operationId": "delete_session",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Delete Session",
+        "tags": [
+          "auth"
+        ]
+      },
+      "post": {
+        "operationId": "create_session",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Session",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/config": {
+      "get": {
+        "description": "Current configuration. Secret values are never returned, only whether they are set.",
+        "operationId": "config",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Config",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Config",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/doctor": {
+      "get": {
+        "operationId": "doctor",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DoctorReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Doctor",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "description": "Liveness probe. Unauthenticated and reveals nothing.",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/api/v1/jobs/validate": {
+      "post": {
+        "operationId": "validate_job",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidateJobRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobValidation"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Validate Job",
+        "tags": [
+          "jobs"
+        ]
+      }
+    },
+    "/api/v1/version": {
+      "get": {
+        "operationId": "version",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VersionInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Version",
+        "tags": [
+          "system"
+        ]
+      }
+    }
+  }
+}

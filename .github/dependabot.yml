@@ -1,0 +1,26 @@
+version: 2
+updates:
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      python:
+        patterns: ["*"]
+
+  - package-ecosystem: npm
+    directory: /ui
+    schedule:
+      interval: weekly
+    groups:
+      ui:
+        patterns: ["*"]
+    ignore:
+      # TypeScript 7 (native) has no JS compiler API; openapi-typescript needs it.
+      - dependency-name: typescript
+        versions: [">=6"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

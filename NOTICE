@@ -1,0 +1,8 @@
+InferenceOpt
+Copyright 2026 The InferenceOpt Authors
+
+This product includes software developed by The InferenceOpt Authors.
+
+The web UI bundled in the Python distribution (inferenceopt/_ui/) includes
+third-party JavaScript packages. Their license notices are listed in
+inferenceopt/_ui/THIRD_PARTY_LICENSES.txt, generated at build time.

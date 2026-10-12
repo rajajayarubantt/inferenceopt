@@ -1,0 +1,32 @@
+# Example user configuration. Copy to the path shown by `inferenceopt config show`
+# (or pass --config). Every key can also be set with an environment variable, e.g.
+#   INFERENCEOPT_SERVER__PORT=9000
+#   INFERENCEOPT_LLM__PLANNER_MODEL=openai/gpt-4.1
+# Never commit API keys: use your provider's environment variable instead.
+
+server:
+  host: 127.0.0.1
+  port: 8765
+  allow_remote: false
+  open_browser: true
+
+storage:
+  database_path: null   # default: per-user data directory
+
+llm:
+  enabled: false
+  planner_model: null   # any LiteLLM model string, e.g. "openai/gpt-4.1" or "ollama/llama3.1"
+  api_base: null
+  temperature: 0.1
+  timeout_seconds: 60
+  max_retries: 2
+  max_planning_tokens: 4000
+  max_calls_per_job: 20
+  allow_external_data: false
+  send_hardware_metadata: true
+  send_model_names: true
+  send_benchmark_traces: false
+
+logging:
+  level: INFO
+  json_format: false

@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "If you use InferenceOpt in your research, please cite it as below."
+title: "InferenceOpt: Hardware-Aware, Measurement-Driven LLM Inference Optimization"
+type: software
+authors:
+  - name: "The InferenceOpt Authors"
+license: Apache-2.0
+repository-code: "https://github.com/rajajayarubantt/inferenceopt"
+keywords:
+  - large language models
+  - inference optimization
+  - benchmarking
+  - autotuning
